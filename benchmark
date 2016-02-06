@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+"""Benchmark the pycalc module
+"""
+
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
+
+from timeit import repeat
+import os
+from functools import partial
+
+N = 10
+TARGET_TIME = 0.5
+COMMANDS = ['python2.7', 'python3.4', 'ipython2', 'ipython3']
+ARGUMENTS = [('baseline', ' -c \"pass\"'),
+             ('full import',
+              " -c \"import sympy as sp; "
+              "import numpy as np; "
+              "import scipy as sc; "
+              "import pandas as pd; "
+              "import matplotlib.pyplot as plt; "
+              "import seaborn as sns\""),
+             ('import pycalc as pc',
+              ' -c \"import pycalc as pc\"'),
+             ('from pycalc import *',
+              ' -c \"from pycalc import *\"')]
+
+print("Minimum out of %d executions, target time: %.1f" % (N, TARGET_TIME))
+for command in COMMANDS:
+    for name, argument in ARGUMENTS:
+        exec_time = min(repeat(
+            partial(os.system,
+                    "".join([command, argument])),
+            number=1,
+            repeat=N))
+        print("%-9s - %-20s %3.4fs => %3.0f%% Target Time" % (
+            command,
+            name,
+            exec_time,
+            100.0 / TARGET_TIME * exec_time))

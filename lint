@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+"""Runs code checkers on current directory
+
+Written by Peter Duerr
+"""
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
+
+
+from subprocess import Popen, PIPE
+import sys
+from datetime import datetime
+
+from pyexperiment.utils.printers import print_blue  # pylint: disable=E0611
+
+CHECKERS = [
+    ['pep8', './pycalc'],
+    ['pep8', './tests'],
+    ['pep8', './lint'],
+    ['pep8', './benchmark'],
+    ['pylint', './pycalc', '--reports=n', '--disable=I0011'],
+    ['pylint', './tests', '--reports=n', '--disable=I0011',
+     '--ignore-imports=y'],
+    ['pylint', './lint', '--reports=n', '--disable=I0011'],
+    ['pylint', './benchmark', '--reports=n', '--disable=I0011'],
+]
+"""List of checkers to run and their arguments
+"""
+
+if __name__ == "__main__":
+    try:
+        TIC = datetime.now()
+        CHECKERS_RUN = 0
+        ERROR = False
+        for checker in CHECKERS:
+            process = Popen(checker, stdout=PIPE)
+            sys.stdout.write('.')
+            sys.stdout.flush()
+            CHECKERS_RUN += 1
+            header = "Output from %s" % " ".join(checker)
+            output = process.communicate()
+            message = ""
+            for elem in output:
+                if elem is not None and not len(elem) == 0:
+                    message += elem
+                    ERROR = True
+            if not message == "":
+                print_blue(header)  # pylint: disable=no-member
+                print_blue("=" * len(header))  # pylint: disable=no-member
+                print(message)
+                print_blue("=" * len(header))  # pylint: disable=no-member
+
+        TOC = datetime.now()
+        print("\n" + ''.join(['-']*70))
+        print("Ran %i checkers in %fs\n" % (CHECKERS_RUN,
+                                            (TOC - TIC).total_seconds()))
+
+        if not ERROR:
+            print("OK")
+    except KeyboardInterrupt:
+        pass
