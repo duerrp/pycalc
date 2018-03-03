@@ -26,7 +26,7 @@ The interactive mode launches an IPython session with pycalc loaded and ready to
 go.
 
 
-.. |Development Status| image:: https://pypip.in/status/pycalc/badge.svg
+.. |Development Status| image:: https://img.shields.io/pypi/status/pycalc.svg
    :target: https://pypi.python.org/pypi/pycalc/
 .. |Version| image:: https://img.shields.io/pypi/v/pycalc.svg
    :target: https://pypi.python.org/pypi/pycalc/
